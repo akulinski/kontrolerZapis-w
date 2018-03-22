@@ -34,6 +34,10 @@ def upload():
 
 def main():
 
+
+    execDay=input("Podaj dzien w ktorym chcesz dokonac zamiany grafiku [eng i duza litera]")
+    execHour=input("Podaj godzine")
+
     while 1:
         now = datetime.datetime.now()
 
@@ -42,7 +46,9 @@ def main():
         if day == 'Thursday':
             print(day)
             time.sleep(1)
-            print(str(now.hour)+" "+str(now.minute))
+            if now.hour == execHour :
+                delate()
+                upload()
         else:
             print(localTime)
 
