@@ -9,7 +9,7 @@ import getCredencials
 import time
 import modifyspreedsheet
 import datetime
-
+import calendar
 
 
 credentials = getCredencials.get_credentials()
@@ -39,27 +39,27 @@ def upload():
                                         fields='id').execute()
 
 def delete(name):
-    for item in items:
-        if item['name']==name:
-            service.files().delete(fileId=item['id']).execute()
+    try:
+        for item in items:
+            if item['name']==name:
+                service.files().delete(fileId=item['id']).execute()
+    except FileNotFoundError:
+        print("File does not exist yet !")
 
 def main():
 
-    now = datetime.datetime.now()
-    execDay=input("Podaj dzien w ktorym chcesz dokonac zamiany grafiku [eng i duza litera]")
-    execHour=input("Podaj godzine")
-
-
-
     while 1:
-
-        if str(execDay) == 'Sunday':
-            print(execDay)
+        my_date = datetime.date.today()
+        day = calendar.day_name[my_date.weekday()]
+        now = datetime.datetime.now()
+        if str(day) == 'Sunday':
             print(now.hour)
             time.sleep(1)
-            if str(now.hour) == str(execHour):
-                upload()
-                delete()
+            if str(now.hour) == str(17) and str(now.minute)==str(35):
+                delete("plan.xlsx")
+                #upload()
+                print("all went well")
+                time.sleep(4000)
 
         else:
             print(localTime)
