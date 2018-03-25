@@ -1,6 +1,5 @@
 from __future__ import print_function
 import httplib2
-import os
 
 from apiclient import discovery
 import getCredencials
@@ -10,27 +9,28 @@ import calendar
 import datetime
 
 
+
+credentials = getCredencials.get_credentials()
+http = credentials.authorize(httplib2.Http())
+service = discovery.build('drive', 'v3', http=http)
+
+results = service.files().list(
+    pageSize=10, fields="nextPageToken, files(id, name)").execute()
+items = results.get('files', [])
+
 def upload():
-    """Shows basic usage of the Google Drive API.
 
-    Creates a Google Drive API service object and outputs the names and IDs
-    for up to 10 files.
-    """
-    credentials =getCredencials.get_credentials()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('drive', 'v3', http=http)
+    file_metadata = {'name': 'PLAN 6 SEMESTR.xlsx'}
+    media = MediaFileUpload('files/plan.xlsx')
 
-    results = service.files().list(
-        pageSize=10,fields="nextPageToken, files(id, name)").execute()
-    items = results.get('files', [])
+    file = service.files().create(body=file_metadata,
+                                        media_body=media,
+                                        fields='id').execute()
 
-    if not items:
-        print('No files found.')
-    else:
-        print('Files:')
-        for item in items:
-            print('{0} ({1})'.format(item['name'], item['id']))
-
+def delete(name):
+    for item in items:
+        if item['name']==name:
+            service.files().delete(fileId=item['id']).execute()
 
 def main():
 
@@ -47,6 +47,7 @@ def main():
             print(day)
             time.sleep(1)
             if now.hour == execHour :
+
                 delate()
                 upload()
         else:
