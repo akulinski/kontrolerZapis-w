@@ -7,7 +7,7 @@ from googleapiclient.http import MediaFileUpload
 import getCredencials
 
 import time
-import calendar
+import modifyspreedsheet
 import datetime
 
 
@@ -30,8 +30,9 @@ def listFiles():
 
 def upload():
 
-    file_metadata = {'name': 'PLAN 6 SEMESTR.xlsx','mimeType': 'application/vnd.google-apps.spreadsheet'}
-    media = MediaFileUpload('PLAN 6 SEMESTR.xlsx',mimetype='text/xlsx',resumable=True)
+
+    file_metadata = {'name': 'plan.xlsx','mimeType': 'application/vnd.google-apps.spreadsheet'}
+    media = MediaFileUpload('plan.xlsx',mimetype='text/xlsx',resumable=True)
 
     file = service.files().create(body=file_metadata,
                                         media_body=media,
@@ -44,17 +45,19 @@ def delete(name):
 
 def main():
 
+    now = datetime.datetime.now()
     execDay=input("Podaj dzien w ktorym chcesz dokonac zamiany grafiku [eng i duza litera]")
     execHour=input("Podaj godzine")
 
+
+
     while 1:
-        now = datetime.datetime.now()
+
         if str(execDay) == 'Sunday':
-            print(day)
+            print(execDay)
             print(now.hour)
             time.sleep(1)
             if str(now.hour) == str(execHour):
-                listFiles()
                 upload()
                 delete()
 
