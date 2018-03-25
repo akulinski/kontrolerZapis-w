@@ -2,6 +2,8 @@ from __future__ import print_function
 import httplib2
 
 from apiclient import discovery
+from googleapiclient.http import MediaFileUpload
+
 import getCredencials
 
 import time
@@ -18,10 +20,18 @@ results = service.files().list(
     pageSize=10, fields="nextPageToken, files(id, name)").execute()
 items = results.get('files', [])
 
+def listFiles():
+    if not items:
+        print('No files found.')
+    else:
+        print('Files:')
+        for item in items:
+            print('{0} ({1})'.format(item['name'], item['id']))
+
 def upload():
 
-    file_metadata = {'name': 'PLAN 6 SEMESTR.xlsx'}
-    media = MediaFileUpload('files/plan.xlsx')
+    file_metadata = {'name': 'PLAN 6 SEMESTR.xlsx','mimeType': 'application/vnd.google-apps.spreadsheet'}
+    media = MediaFileUpload('PLAN 6 SEMESTR.xlsx',mimetype='text/xlsx',resumable=True)
 
     file = service.files().create(body=file_metadata,
                                         media_body=media,
@@ -34,24 +44,23 @@ def delete(name):
 
 def main():
 
-
     execDay=input("Podaj dzien w ktorym chcesz dokonac zamiany grafiku [eng i duza litera]")
     execHour=input("Podaj godzine")
 
     while 1:
         now = datetime.datetime.now()
-
-        my_date = datetime.date.today()
-        day=calendar.day_name[my_date.weekday()]
-        if day == 'Thursday':
+        if str(execDay) == 'Sunday':
             print(day)
+            print(now.hour)
             time.sleep(1)
-            if now.hour == execHour :
-
-                delate()
+            if str(now.hour) == str(execHour):
+                listFiles()
                 upload()
+                delete()
+
         else:
             print(localTime)
+
 
 if __name__ == '__main__':
     main()
